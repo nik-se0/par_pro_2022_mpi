@@ -123,7 +123,7 @@ TEST(Parallel_Operations_MPI, Paralle_method_gradient_is_correct3x3) {
   Vector V(n);
   Vector M(n * n);
   Vector res2(n);
-  V[0] = 6;  //com
+  V[0] = 6; 
   V[1] = 6;
   V[2] = 10;
   M[0] = 1;
