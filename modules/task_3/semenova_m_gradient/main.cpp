@@ -4,7 +4,7 @@
 #include "./m_gradient.h"
 #include <gtest-mpi-listener.hpp>
 
-TEST(Parallel_Operations_MPI, Serial_method_gradient_is_correct_1) {
+TEST(Parallel_Operations_MPI, Serial_method_gradient_is_correct2x2_1) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, & rank);
   int n = 2;
@@ -25,7 +25,7 @@ TEST(Parallel_Operations_MPI, Serial_method_gradient_is_correct_1) {
       EXPECT_LE(abs(res2[i] - res1[i]), 1);
   }
 }
-TEST(Parallel_Operations_MPI, Serial_method_gradient_is_correct_2) {
+TEST(Parallel_Operations_MPI, Serial_method_gradient_is_correct2x2_2) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int n = 2;
@@ -46,7 +46,7 @@ TEST(Parallel_Operations_MPI, Serial_method_gradient_is_correct_2) {
             EXPECT_LE(abs(res2[i] - res1[i]), 1);
     }
 }
-TEST(Parallel_Operations_MPI, Serial_method_gradient_is_correct_3) {
+TEST(Parallel_Operations_MPI, Serial_method_gradient_is_correct3x3) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, & rank);
   int n = 3;
@@ -74,7 +74,7 @@ TEST(Parallel_Operations_MPI, Serial_method_gradient_is_correct_3) {
       EXPECT_LE(abs(res2[i] - res1[i]), 1);
   }
 }
-TEST(Parallel_Operations_MPI, Paralle_method_gradient_is_correct_1) {
+TEST(Parallel_Operations_MPI, Paralle_method_gradient_is_correct2x2_1) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, & rank);
   int n = 2;
@@ -95,7 +95,7 @@ TEST(Parallel_Operations_MPI, Paralle_method_gradient_is_correct_1) {
         EXPECT_LE(abs(res2[i] - res1[i]), 1);
   }
 }
-TEST(Parallel_Operations_MPI, Paralle_method_gradient_is_correct_2) {
+TEST(Parallel_Operations_MPI, Paralle_method_gradient_is_correct2x2_2) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int n = 2;
@@ -116,7 +116,7 @@ TEST(Parallel_Operations_MPI, Paralle_method_gradient_is_correct_2) {
             EXPECT_LE(abs(res2[i] - res1[i]), 1);
     }
 }
-TEST(Parallel_Operations_MPI, Paralle_method_gradient_is_correct_3) {
+TEST(Parallel_Operations_MPI, Paralle_method_gradient_is_correct3x3) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, & rank);
   int n = 3;
@@ -143,6 +143,41 @@ TEST(Parallel_Operations_MPI, Paralle_method_gradient_is_correct_3) {
     for (int i = 0; i < res1.size(); i++)
         EXPECT_LE(abs(res2[i] - res1[i]), 1);
   }
+}
+TEST(Parallel_Operations_MPI, Serial_and_paralle_method_with_random1) {
+  int rank;
+  int n = 5;
+  Vector V;
+  Vector M;
+  MPI_Comm_rank(MPI_COMM_WORLD, & rank);
+  V = RandVec(n);
+  M = RandMat(n);
+  Vector res2 = Paralle_method_gradient(M, V, n);
+  if (rank == 0) {
+    Vector res1 = Serial_method_gradient(M, V, n);
+    for (int i = 0; i < res1.size(); i++) {
+       double E = std::max(1.0, res2[i]/0.00001);
+       EXPECT_LE(abs(res2[i] - res1[i]), E);
+    }
+  }
+}
+TEST(Parallel_Operations_MPI, Serial_and_paralle_method_with_random2) {
+    int rank;
+    int n = 5;
+    Vector V;
+    Vector M;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    V = RandVec(n);
+    M = RandMat(n);
+
+    Vector res1 = Paralle_method_gradient(M, V, n);
+    if (rank == 0) {
+        Vector res2 = Serial_method_gradient(M, V, n);
+        for (int i = 0; i < res1.size(); i++) {
+            double E = std::max(1.0, res2[i] / 0.00001);
+            EXPECT_LE(abs(res2[i] - res1[i]), E);
+        }
+    }
 }
 
 int main(int argc, char** argv) {
